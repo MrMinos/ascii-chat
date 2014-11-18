@@ -27,7 +27,63 @@ void sigint_handler(int sigint) {
     close(sockfd);
     exit(0);
 }
+//----------------------ASM goes here-------------
+ .MODEL small, c
 
+        .DATA
+
+arg1    DW     1234
+arg2    DW     4321
+format1 DB     "Arg1: %d", 10, 0      ; Format string for printf
+format2 DB     "Arg2: %d", 10, 10, 0  ; Format string for printf
+
+EXTRN  _acrtused:abs              ; Bring in C startup
+
+        .CODE
+
+EXTRN  ptrswap:proc               ; External C routine
+EXTRN  printf:proc                ; External C run-time routine
+PUBLIC main                       ; C startup requires the name _main
+
+main:
+        MOV    ax, arg1
+        PUSH   ax                 ; Push 2nd argument (C convention)
+        MOV    bx, offset format1
+        PUSH   bx                 ; Push 1st argument (C convention)
+        CALL   printf             ; Call C run-time routine
+
+        MOV    ax, arg2
+        PUSH   ax                 ; Push 2nd argument (C convention)
+        MOV    bx, offset format2
+        PUSH   bx                 ; Push 1st argument (C convention)
+        CALL   printf             ; Call C run-time routine
+
+        MOV    bx, offset arg2
+        PUSH   bx                 ; Push 2nd argument (C convention)
+        MOV    bx, offset arg1
+        PUSH   bx                 ; Push 1st argument (C convention)
+        CALL   ptrswap            ; Call C routine from module
+
+        MOV    ax, arg1
+        PUSH   ax                 ; Push 2nd argument (C convention)
+        MOV    bx, offset format1
+        PUSH   bx                 ; Push 1st argument (C convention)
+        CALL   printf             ; Call C run-time routine
+
+        MOV    ax, arg2
+        PUSH   ax                 ; Push 2nd argument (C convention)
+        MOV    bx, offset format2
+        PUSH   bx                 ; Push 1st argument (C convention)
+        CALL   printf             ; Call C run-time routine
+
+        MOV    ah, 4ch            ; Terminate program
+        int    21h
+
+        END                       ; Entry point will be specified by
+                                  ;    the C startup code
+
+
+//------------------------------------------------
 
 int main(int argc, char *argv[]) {
     options_init(argc, argv);

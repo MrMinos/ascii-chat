@@ -30,6 +30,9 @@ Build and run
 
 TODO
 ==========
+- Port some functions as inline assembly for class project
+- Have optimization in mind, when programming the code in assembly
+
 - Client should continuously attempt to reconnect
 - Client program should accept URL arguments, as well as IP addresses like it does now
 - Colorize ASCII output
